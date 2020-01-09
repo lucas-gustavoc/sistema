@@ -9,7 +9,6 @@ const databaseName = 'crm'
 
 // Método utilizado para inserir um novo documento
 const inserir = (nomeDaColecao, item) => {
-
     return new Promise((resolve, reject) => {
         const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
         client.connect((error) => {
@@ -31,43 +30,93 @@ const inserir = (nomeDaColecao, item) => {
     })
 }
 
-inserir('users', {
-    name: 'Maria',
-    age: 58
-}).then(({ insertedId: novoID }) => {
-    console.log('Cadastrado!', novoID)
-}).catch(({ message }) => {
-    console.log('It went wrong...', message)
-})
-
-
 // Método utilizado para buscar um único documento
 const buscarUm = (nomeDaColecao, querySelecao = {}) => {
-    const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
-    let retorno = {}
-    client.connect((error) => {
-        if (error) {
-            return console.log('Não foi possível conectar.')
-        }
-
-        const db = client.db(databaseName)
-
-        db.collection(nomeDaColecao).findOne(querySelecao).then((result) => {
-            console.log(result.age, 'nice')
-        }).catch((error) => {
-            console.log('Ocorreu um erro...')
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+    
+            db.collection(nomeDaColecao).findOne(querySelecao).then((result) => {
+                resolve(result)
+            }).catch((error) => {
+                reject(error)
+            })
+    
+            client.close()
         })
-
-        client.close()
     })
 }
 
+// Método utilizado para buscar um conjunto de documentos
+// Mais sobre os operadores de seleção: https://docs.mongodb.com/manual/reference/operator/query/
+const buscar = (nomeDaColecao, querySelecao = {}, opcoesDeSelecao = {}) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+    
+            try {
+                const cursorData = db.collection(nomeDaColecao).find(querySelecao, opcoesDeSelecao)
+                resolve(cursorData)
+            } catch(error) {
+                reject(error)
+            }
+            
+            // client.close()
+        })
+    })
+}
 
+// Método utilizado para contar os documentos de uma seleção
+const contar = (nomeDaColecao, querySelecao = {}) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+    
+            db.collection(nomeDaColecao).countDocuments(querySelecao).then((result) => {
+                resolve(result)
+            }).catch((error) => {
+                reject(error)
+            })
+            
+            client.close()
+        })
+    })
+}
 
-
-
-
-
-
-
-
+// Método utilizado para atualizar os dados de um ou mais documentos
+// Mais sobre os operadores de atualização em: https://docs.mongodb.com/manual/reference/operator/update/
+const atualizar = (nomeDaColecao, atualizacoes, querySelecao = {}) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+            
+            db.collection(nomeDaColecao).updateMany(querySelecao, atualizacoes).then(() => {
+                resolve()
+            }).catch((error) => {
+                reject(error)
+            })
+            
+            client.close()
+        })
+    })
+}
