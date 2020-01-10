@@ -120,3 +120,83 @@ const atualizar = (nomeDaColecao, atualizacoes, querySelecao = {}) => {
         })
     })
 }
+
+
+// Método utilizado para atualizar os dados de um único documento
+// Mais sobre os operadores de atualização em: https://docs.mongodb.com/manual/reference/operator/update/
+const atualizarUm = (nomeDaColecao, atualizacoes, querySelecao = {}) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+            
+            db.collection(nomeDaColecao).updateOne(querySelecao, atualizacoes).then(() => {
+                resolve()
+            }).catch((error) => {
+                reject(error)
+            })
+            
+            client.close()
+        })
+    })
+}
+
+
+// Método utilizado para deletar um ou mais documentos do Banco de Dados
+const excluir = (nomeDaColecao, querySelecao) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+            
+            db.collection(nomeDaColecao).deleteMany(querySelecao).then(() => {
+                resolve()
+            }).catch((error) => {
+                reject(error)
+            })
+            
+            client.close()
+        })
+    })
+}
+
+
+// Método utilizado para deletar apenas um documento do Banco de Dados
+const excluirUm = (nomeDaColecao, querySelecao) => {
+    return new Promise((resolve, reject) => {
+        const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
+        client.connect((error) => {
+            if (error) {
+                return reject(error)
+            }
+    
+            const db = client.db(databaseName)
+            
+            db.collection(nomeDaColecao).deleteOne(querySelecao).then(() => {
+                resolve()
+            }).catch((error) => {
+                reject(error)
+            })
+            
+            client.close()
+        })
+    })
+}
+
+module.exports = {
+    inserir,
+    buscar,
+    buscarUm,
+    atualizar,
+    atualizarUm,
+    excluir,
+    excluirUm
+}
