@@ -52,7 +52,7 @@ const buscarUm = (nomeDaColecao, querySelecao = {}) => {
     })
 }
 
-// Método utilizado para buscar um conjunto de documentos
+// Método utilizado para buscar um conjunto de documentos. o Retorno consiste em um cursor e no cliente para ser fechado.
 // Mais sobre os operadores de seleção: https://docs.mongodb.com/manual/reference/operator/query/
 const buscar = (nomeDaColecao, querySelecao = {}, opcoesDeSelecao = {}) => {
     return new Promise((resolve, reject) => {
@@ -66,7 +66,7 @@ const buscar = (nomeDaColecao, querySelecao = {}, opcoesDeSelecao = {}) => {
     
             try {
                 const cursorData = db.collection(nomeDaColecao).find(querySelecao, opcoesDeSelecao)
-                resolve(cursorData)
+                resolve({ cursorData, client })
             } catch(error) {
                 reject(error)
             }
