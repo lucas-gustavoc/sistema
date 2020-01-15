@@ -24,8 +24,15 @@ class Contato {
         return db.atualizarUm('contatos', { $set: this }, { _id: new ObjectID(stringId) })
     }
 
-    static read(query = {}) {
-        return db.buscar('contatos', query)
+    static async read(query = {}) {
+        const busca = await db.buscar('contatos', query)
+        const resultado = await busca.cursorData.toArray()
+        busca.client.close()
+        return resultado
+    }
+
+    static async readOne(stringId) {
+        return db.buscarUm('contatos', { _id: new ObjectID(stringId) })
     }
 
     static delete(stringId) {
@@ -33,3 +40,5 @@ class Contato {
     }
 
 }
+
+module.exports = { Contato }

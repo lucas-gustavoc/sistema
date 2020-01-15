@@ -1,5 +1,4 @@
 const { MongoClient, ObjectID } = require('mongodb')
-const assert = require('assert');
 
 
 // Configurações de Conexão
@@ -11,20 +10,22 @@ const databaseName = 'crm'
 const inserir = (nomeDaColecao, item) => {
     return new Promise((resolve, reject) => {
         const client = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true })
-        client.connect((error) => {
-            // assert.equal(null, error);
+        client.connect(async (error) => {
+            
             if (error) {
                 return reject(error)
             }
         
             const db = client.db(databaseName)
-        
-            db.collection(nomeDaColecao).insertOne(item).then((result) => {
+            
+            // Apenas para fins didáticos, trabalhei nessa função de inserção com a função async/await
+            try {
+                const result = await db.collection(nomeDaColecao).insertOne(item)
                 resolve(result)
-            }).catch((error) => {
-                reject(error)
-            })
-        
+            } catch (e) {
+                reject(e)
+            }
+            
             client.close()
         })
     })
