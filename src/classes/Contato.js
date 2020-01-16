@@ -1,5 +1,5 @@
 const { ObjectID } = require('mongodb')
-const db = require('./mongodb')
+const db = require('../db/mongodb')
 
 class Contato {
     constructor(dadosContato) {

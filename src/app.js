@@ -1,6 +1,6 @@
 const path = require('path')
 const express = require('express')
-const { Contato } = require('./classes')
+const routerContatos = require('./routers/RouterContatos')
 
 // Variáveis principais
 const app = express()
@@ -15,47 +15,9 @@ app.use(express.static(publicDirectoryPath))
 
 // Outras definições
 app.use(express.json())
+app.use(routerContatos)
 
 // Lidando com solicitações
-
-// CREATE contatos
-app.post('/contatos', async (req, res) => {
-    const contato = new Contato(req.body)
-
-    try {
-        await contato.save()
-        res.status(201).send(contato)
-    } catch (error) {
-        res.status(400).send(error.message)
-    }
-})
-
-// READ contatos
-app.get('/contatos', async (req, res) => {
-    try {
-        const busca = await Contato.read()
-        res.send(busca)
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-})
-
-// READ um único contato
-app.get('/contatos/:id', async (req, res) => {
-    const _id = req.params.id
-    
-    try {
-        const contato = await Contato.readOne(_id)
-
-        if (!contato) {
-            return res.status(404).send()
-        }
-
-        res.send(contato)
-    } catch (error) {
-        res.status(500).send()
-    }
-})
 
 
 // Iniciando servidor
