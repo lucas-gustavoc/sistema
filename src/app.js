@@ -1,6 +1,7 @@
 const path = require('path')
 const express = require('express')
 const routerContatos = require('./routers/RouterContatos')
+const routerOrcamentos = require('./routers/RouterOrcamentos')
 
 // Variáveis principais
 const app = express()
@@ -16,6 +17,7 @@ app.use(express.static(publicDirectoryPath))
 // Outras definições
 app.use(express.json())
 app.use(routerContatos)
+app.use(routerOrcamentos)
 
 // Lidando com solicitações
 

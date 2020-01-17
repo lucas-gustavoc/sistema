@@ -3,17 +3,17 @@ const db = require('../db/mongodb')
 
 class Contato {
     constructor(dadosContato) {
-        if (dadosContato.nome) this.nome = dadosContato.nome
-        if (dadosContato.apelidoOuNomeFantasia) this.apelidoOuNomeFantasia = dadosContato.apelidoOuNomeFantasia
-        if (dadosContato.tipo) this.tipo = dadosContato.tipo
-        if (dadosContato.telefone) this.telefone = dadosContato.telefone
-        if (dadosContato.email) this.email = dadosContato.email
-        if (dadosContato.cpfOuCnpj) this.cpfOuCnpj = dadosContato.cpfOuCnpj
-        if (dadosContato.rgOuIe) this.rgOuIe = dadosContato.rgOuIe
-        if (dadosContato.obs) this.obs = dadosContato.obs
-        if (dadosContato.endereco) this.endereco = dadosContato.endereco
-        if (dadosContato.dataCadastro) this.dataCadastro = dadosContato.dataCadastro
-        if (dadosContato.atendidoPor) this.atendidoPor = dadosContato.atendidoPor
+        this.nome = dadosContato.nome
+        this.apelidoOuNomeFantasia = dadosContato.apelidoOuNomeFantasia
+        this.tipo = dadosContato.tipo
+        this.telefone = dadosContato.telefone
+        this.email = dadosContato.email
+        this.cpfOuCnpj = dadosContato.cpfOuCnpj
+        this.rgOuIe = dadosContato.rgOuIe
+        this.obs = dadosContato.obs
+        this.endereco = dadosContato.endereco
+        this.dataCadastro = dadosContato.dataCadastro
+        this.atendidoPor = dadosContato.atendidoPor
     }
 
     save() {
@@ -31,7 +31,7 @@ class Contato {
         return resultado
     }
 
-    static async readOne(stringId) {
+    static readOne(stringId) {
         return db.buscarUm('contatos', { _id: new ObjectID(stringId) })
     }
 
@@ -41,4 +41,4 @@ class Contato {
 
 }
 
-module.exports = { Contato }
+module.exports = Contato

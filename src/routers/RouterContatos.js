@@ -1,6 +1,6 @@
 const express = require('express')
 const router = new express.Router()
-const { Contato } = require('../classes/Contato')
+const Contato = require('../classes/Contato')
 
 // CREATE contatos
 router.post('/contatos', async (req, res) => {
@@ -16,8 +16,19 @@ router.post('/contatos', async (req, res) => {
 
 // READ contatos
 router.get('/contatos', async (req, res) => {
+    const query = {}
+    const qString = req.query
+
+    if (qString.nome) {
+        query.$text = {
+            $search: qString.nome,
+            $caseSensitive: false,
+            $diacriticSensitive: false
+        }
+    }
+    
     try {
-        const busca = await Contato.read()
+        const busca = await Contato.read(query)
         res.send(busca)
     } catch (error) {
         res.status(500).send(error.message)
