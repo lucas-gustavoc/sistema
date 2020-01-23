@@ -17,11 +17,34 @@ class Orcamento {
         this.dataUltimaAlteracao = dadosOrcamento.dataUltimaAlteracao
     }
 
+    validate() {
+        let valid = true
+
+        // nome. Required
+        if (!this.titulo) {
+            // Entra aqui se 'titulo' for undefined ou '' (vazio)
+            this.validationMessage = 'Campo "título" é obrigatório.'
+            valid = false
+        }
+
+        return valid
+    }
+
     save() {
+        delete this.validationMessage
         return db.inserir('orcamentos', this)
     }
 
+    registerUpdates(updates) {
+        const fields = Object.keys(updates)
+        fields.forEach((field) => {
+            this[field] = updates[field]
+        })
+        return fields
+    }
+
     update(stringId) {
+        delete this.validationMessage
         return db.atualizarUm('orcamentos', { $set: this }, { _id: new ObjectID(stringId) })
     }
 
@@ -32,8 +55,10 @@ class Orcamento {
         return resultado
     }
 
-    static readOne(stringId) {
-        return db.buscarUm('orcamentos', { _id: new ObjectID(stringId) })
+    static async readOne(stringId) {
+        const dadosOtt = await db.buscarUm('orcamentos', { _id: new ObjectID(stringId) })
+        if (!dadosOtt) return undefined
+        return new Orcamento(dadosOtt)
     }
 
     static delete(stringId) {

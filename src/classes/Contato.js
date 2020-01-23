@@ -1,4 +1,5 @@
 const { ObjectID } = require('mongodb')
+const validator = require('validator')
 const db = require('../db/mongodb')
 
 class Contato {
@@ -16,11 +17,34 @@ class Contato {
         this.atendidoPor = dadosContato.atendidoPor
     }
 
+    validate() {
+        let valid = true
+
+        // nome. Required
+        if (!this.nome) {
+            // Entra aqui se 'nome' for undefined ou '' (vazio)
+            this.validationMessage = 'Campo "nome" é obrigatório.'
+            valid = false
+        }
+
+        return valid
+    }
+
     save() {
+        delete this.validationMessage
         return db.inserir('contatos', this)
     }
 
+    registerUpdates(updates) {
+        const fields = Object.keys(updates)
+        fields.forEach((field) => {
+            this[field] = updates[field]
+        })
+        return fields
+    }
+
     update(stringId) {
+        delete this.validationMessage
         return db.atualizarUm('contatos', { $set: this }, { _id: new ObjectID(stringId) })
     }
 
@@ -31,8 +55,10 @@ class Contato {
         return resultado
     }
 
-    static readOne(stringId) {
-        return db.buscarUm('contatos', { _id: new ObjectID(stringId) })
+    static async readOne(stringId) {
+        const dadosCtt = await db.buscarUm('contatos', { _id: new ObjectID(stringId) })
+        if (!dadosCtt) return undefined
+        return new Contato(dadosCtt)
     }
 
     static delete(stringId) {

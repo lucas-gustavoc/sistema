@@ -7,8 +7,12 @@ router.post('/contatos', async (req, res) => {
     const contato = new Contato(req.body)
 
     try {
-        await contato.save()
-        res.status(201).send(contato)
+        if (contato.validate()) {
+            await contato.save()
+            res.status(201).send(contato)
+        } else {
+            res.status(400).send(contato.validationMessage)
+        }
     } catch (error) {
         res.status(400).send(error.message)
     }
@@ -48,7 +52,7 @@ router.get('/contatos/:id', async (req, res) => {
 
         res.send(contato)
     } catch (error) {
-        res.status(500).send()
+        res.status(500).send(error.message)
     }
 })
 
@@ -57,9 +61,21 @@ router.patch('/contatos/:id', async (req, res) => {
     const _id = req.params.id
     
     try {
-        const contato = new Contato(req.body)
-        await contato.update(_id)
-        res.send(contato)
+        const contato = await Contato.readOne(_id)
+
+        if (!contato) {
+            return res.status(404).send()
+        }
+        
+        contato.registerUpdates(req.body)
+
+        if (contato.validate()) {
+            await contato.update(_id)
+            res.send(contato)
+        } else {
+            res.status(400).send(contato.validationMessage)
+        }
+        
     } catch (error) {
         res.status(400).send(error.message)
     }

@@ -6,8 +6,12 @@ router.post('/orcamentos', async (req, res) => {
     const orcamento = new Orcamento(req.body)
 
     try {
-        await orcamento.save()
-        res.status(201).send(orcamento)
+        if (orcamento.validate()) {
+            await orcamento.save()
+            res.status(201).send(orcamento)
+        } else {
+            res.status(400).send(orcamento.validationMessage)
+        }
     } catch (error) {
         res.status(400).send(error.message)
     }
@@ -53,9 +57,20 @@ router.patch('/orcamentos/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
-        const orcamento = new Orcamento(req.body)
-        await orcamento.update(_id)
-        res.send(orcamento)
+        const orcamento = await Orcamento.readOne(_id)
+
+        if (!orcamento) {
+            return res.status(404).send()
+        }
+        
+        orcamento.registerUpdates(req.body)
+
+        if (orcamento.validate()) {
+            await orcamento.update(_id)
+            res.send(orcamento)
+        } else {
+            res.status(400).send(orcamento.validationMessage)
+        }
     } catch (error) {
         res.status(400).send(error.message)
     }

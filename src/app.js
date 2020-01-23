@@ -9,6 +9,12 @@ const app = express()
 const port = 3000
 // const port = process.env.PORT || 3000 //production only
 
+// Middleware functions
+app.use((req, res, next) => {
+    // res.status(503).send('Sorry, we are in maintainance...')
+    next()
+})
+
 // Caminhos
 const publicDirectoryPath = path.join(__dirname, '../public')
 

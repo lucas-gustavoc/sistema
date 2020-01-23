@@ -15,8 +15,30 @@ class Conta {
         this.faturas = dadosConta.faturas
     }
 
+    validate() {
+        let valid = true
+
+        // titulo. Required
+        if (!this.titulo) {
+            // Entra aqui se 'titulo' for undefined ou '' (vazio)
+            this.validationMessage = 'Campo "título" é obrigatório.'
+            valid = false
+        }
+
+        return valid
+    }
+
     save() {
+        delete this.validationMessage
         return db.inserir('contas', this)
+    }
+
+    registerUpdates(updates) {
+        const fields = Object.keys(updates)
+        fields.forEach((field) => {
+            this[field] = updates[field]
+        })
+        return fields
     }
 
     update(stringId) {
@@ -30,8 +52,10 @@ class Conta {
         return resultado
     }
 
-    static readOne(stringId) {
-        return db.buscarUm('contas', { _id: new ObjectID(stringId) })
+    static async readOne(stringId) {
+        const dadosCt = await db.buscarUm('contas', { _id: new ObjectID(stringId) })
+        if (!dadosCt) return undefined
+        return new Conta(dadosCt)
     }
 
     static delete(stringId) {

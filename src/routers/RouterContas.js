@@ -6,8 +6,12 @@ router.post('/contas', async (req, res) => {
     const conta = new Conta(req.body)
 
     try {
-        await conta.save()
-        res.status(201).send(conta)
+        if (conta.validate()) {
+            await conta.save()
+            res.status(201).send(conta)
+        } else {
+            res.status(400).send(conta.validationMessage)
+        }
     } catch (error) {
         res.status(400).send(error.message)
     }
@@ -45,7 +49,7 @@ router.get('/contas/:id', async (req, res) => {
 
         res.send(conta)
     } catch (error) {
-        res.status(500).send()
+        res.status(500).send(error.message)
     }
 })
 
@@ -53,9 +57,20 @@ router.patch('/contas/:id', async (req, res) => {
     const _id = req.params.id
 
     try {
-        const conta = new Conta(req.body)
-        await conta.update(_id)
-        res.send(conta)
+        const conta = await Conta.readOne(_id)
+
+        if (!conta) {
+            return res.status(404).send()
+        }
+        
+        conta.registerUpdates(req.body)
+
+        if (conta.validate()) {
+            await conta.update(_id)
+            res.send(conta)
+        } else {
+            res.status(400).send(conta.validationMessage)
+        }
     } catch (error) {
         res.status(400).send(error.message)
     }
