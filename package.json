@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/lucas-gustavoc/sistema#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mongodb": "^3.4.1",
     "validator": "^12.1.0"
   }
